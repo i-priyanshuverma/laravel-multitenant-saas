@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http/Middleware;
+namespace App\Http\Middleware;
 
 use App\Models\Domain;
 use App\Models\Tenant;
