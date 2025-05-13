@@ -22,8 +22,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 });
 
+Route::get('/invitations/{token}/accept', [\App\Http\Controllers\Tenant\TeamInvitationController::class, 'accept'])->name('invitations.accept');
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    Route::post('/team/invitations', [\App\Http\Controllers\Tenant\TeamInvitationController::class, 'store'])->name('team.invitations.store');
 
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
