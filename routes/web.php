@@ -33,6 +33,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::post('/team/invitations', [\App\Http\Controllers\Tenant\TeamInvitationController::class, 'store'])->name('team.invitations.store');
+    Route::get('/settings/team', [\App\Http\Controllers\Tenant\TeamController::class, 'index'])->name('team.index');
+    Route::delete('/settings/team/{user}', [\App\Http\Controllers\Tenant\TeamController::class, 'destroy'])->name('team.destroy');
+
+    Route::get('/settings/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/settings/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/settings/password', [\App\Http\Controllers\Tenant\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
