@@ -40,6 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/settings/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/settings/password', [\App\Http\Controllers\Tenant\ProfileController::class, 'updatePassword'])->name('profile.password');
 
+    Route::get('/billing', [\App\Http\Controllers\Tenant\BillingController::class, 'index'])->name('billing.index');
+    Route::post('/billing/checkout', [\App\Http\Controllers\Tenant\BillingController::class, 'checkout'])->name('billing.checkout');
+    Route::post('/billing/payment-methods', [\App\Http\Controllers\Tenant\BillingController::class, 'storePaymentMethod'])->name('billing.pm.store');
+
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
