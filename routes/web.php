@@ -28,6 +28,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/invitations/{token}/accept', [\App\Http\Controllers\Tenant\TeamInvitationController::class, 'accept'])->name('invitations.accept');
+Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

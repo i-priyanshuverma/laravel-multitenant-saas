@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+        ]);
+
         $middleware->alias([
             'tenant.identify' => \App\Http\Middleware\IdentifyTenant::class,
             'tenant.ensure' => \App\Http\Middleware\EnsureTenantIsSet::class,
