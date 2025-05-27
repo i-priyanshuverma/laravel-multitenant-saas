@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
-use App\Models\Subscription;
 use App\Services\StripeService;
+use App\Services\SubscriptionService;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,8 +14,10 @@ use Inertia\Response;
 
 class BillingController extends Controller
 {
-    public function __construct(protected StripeService $stripeService)
-    {
+    public function __construct(
+        protected StripeService $stripeService,
+        protected SubscriptionService $subscriptionService
+    ) {
     }
 
     /**
@@ -46,7 +48,7 @@ class BillingController extends Controller
     }
 
     /**
-     * Handle checkout / plan upgrade.
+     * Handle checkout / plan upgrade via SubscriptionService.
      */
     public function checkout(Request $request): RedirectResponse
     {
@@ -60,21 +62,7 @@ class BillingController extends Controller
 
         $plan = Plan::findOrFail($request->plan_id);
 
-        // Cancel existing active subscription
-        Subscription::where('tenant_id', $tenant->id)->update(['stripe_status' => 'canceled']);
-
-        // Create new active subscription
-        $subscription = Subscription::create([
-            'tenant_id' => $tenant->id,
-            'plan_id' => $plan->id,
-            'type' => 'main',
-            'stripe_id' => 'sub_mock_' . uniqid(),
-            'stripe_status' => 'active',
-            'stripe_price' => $plan->stripe_price_id,
-            'quantity' => 1,
-        ]);
-
-        $tenant->update(['plan_id' => $plan->id]);
+        $this->subscriptionService->subscribe($tenant, $plan);
 
         return back()->with('success', 'Successfully subscribed to the ' . $plan->name . ' plan!');
     }
