@@ -3,10 +3,18 @@
     "name": "saas/laravel-multitenant-saas",
     "type": "project",
     "description": "Multi-tenant SaaS Platform built with Laravel 11, Vue 3, Inertia.js, Filament v3, and PostgreSQL.",
-    "keywords": ["laravel", "multi-tenant", "saas", "inertia", "filament", "vue3"],
+    "keywords": [
+        "laravel",
+        "multi-tenant",
+        "saas",
+        "inertia",
+        "filament",
+        "vue3"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "filament/filament": "^3.2",
         "inertiajs/inertia-laravel": "^3.1",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.10.1",
@@ -53,7 +61,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
