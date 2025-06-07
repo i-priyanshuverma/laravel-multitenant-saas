@@ -88,6 +88,12 @@ class TenantResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('impersonate')
+                    ->label('Impersonate')
+                    ->icon('heroicon-o-arrow-left-on-into-square')
+                    ->color('warning')
+                    ->url(fn (Tenant $record) => route('admin.impersonate', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);

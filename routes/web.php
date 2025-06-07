@@ -30,6 +30,11 @@ Route::middleware('guest')->group(function () {
 Route::get('/invitations/{token}/accept', [\App\Http\Controllers\Tenant\TeamInvitationController::class, 'accept'])->name('invitations.accept');
 Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
+Route::middleware(['auth', \App\Http\Middleware\EnsureSuperAdmin::class])->group(function () {
+    Route::get('/admin/impersonate/{tenant}', [\App\Http\Controllers\Admin\ImpersonateController::class, 'impersonate'])->name('admin.impersonate');
+});
+Route::post('/admin/impersonate/leave', [\App\Http\Controllers\Admin\ImpersonateController::class, 'leave'])->name('admin.impersonate.leave');
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
