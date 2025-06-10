@@ -86,7 +86,10 @@ class TenantResource extends Resource
                         'suspended' => 'Suspended',
                         'canceled' => 'Canceled',
                     ]),
+                Tables\Filters\TrashedFilter::make(),
             ])
+            ->defaultPaginationPageOption(10)
+            ->paginationPageOptions([10, 25, 50])
             ->actions([
                 Tables\Actions\Action::make('impersonate')
                     ->label('Impersonate')
