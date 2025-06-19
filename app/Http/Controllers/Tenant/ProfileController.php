@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,11 +18,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        /** @var User $user */
+        $user = $request->user();
+
         return Inertia::render('Settings/Profile', [
             'user' => [
-                'name' => $request->user()->name,
-                'email' => $request->user()->email,
-                'role' => $request->user()->role,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
             ],
         ]);
     }
@@ -36,7 +40,9 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255'],
         ]);
 
-        $request->user()->update([
+        /** @var User $user */
+        $user = $request->user();
+        $user->update([
             'name' => $request->name,
             'email' => $request->email,
         ]);
@@ -54,7 +60,9 @@ class ProfileController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
-        $request->user()->update([
+        /** @var User $user */
+        $user = $request->user();
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 

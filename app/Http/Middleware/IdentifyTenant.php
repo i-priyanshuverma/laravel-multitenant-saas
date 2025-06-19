@@ -8,7 +8,6 @@ use App\Services\TenantManager;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class IdentifyTenant
 {
@@ -40,9 +39,9 @@ class IdentifyTenant
     {
         // 1. Check Header (X-Tenant or X-Tenant-ID)
         $tenantHeader = $request->header('X-Tenant') ?: $request->header('X-Tenant-ID');
-        if ($tenantHeader) {
+        if ($tenantHeader && is_string($tenantHeader)) {
             $tenant = Tenant::where('id', $tenantHeader)->orWhere('slug', $tenantHeader)->first();
-            if ($tenant) {
+            if ($tenant instanceof Tenant) {
                 return $tenant;
             }
         }
@@ -51,8 +50,9 @@ class IdentifyTenant
         $host = $request->getHost();
 
         // Direct domain match
+        /** @var Domain|null $domainRecord */
         $domainRecord = Domain::where('domain', $host)->first();
-        if ($domainRecord) {
+        if ($domainRecord && $domainRecord->tenant instanceof Tenant) {
             return $domainRecord->tenant;
         }
 
@@ -61,8 +61,9 @@ class IdentifyTenant
         if (count($parts) >= 2) {
             $subdomain = $parts[0];
             if ($subdomain !== 'www' && $subdomain !== 'admin' && $subdomain !== 'api') {
+                /** @var Tenant|null $tenant */
                 $tenant = Tenant::where('slug', $subdomain)->first();
-                if ($tenant) {
+                if ($tenant instanceof Tenant) {
                     return $tenant;
                 }
             }

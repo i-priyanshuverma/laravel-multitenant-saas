@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +29,7 @@ class Domain extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
-    public function scopePrimary($query)
+    public function scopePrimary(Builder $query): Builder
     {
         return $query->where('is_primary', true);
     }
