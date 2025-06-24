@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-worker
+  namespace: default
+  labels:
+    app: saas-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: saas-worker
+  template:
+    metadata:
+      labels:
+        app: saas-worker
+    spec:
+      containers:
+      - name: worker
+        image: ghcr.io/saas/laravel-app:latest
+        command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]
+        envFrom:
+        - configMapRef:
+            name: saas-config
+        - secretRef:
+            name: saas-secrets
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
