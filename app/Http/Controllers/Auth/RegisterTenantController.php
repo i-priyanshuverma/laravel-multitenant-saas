@@ -79,6 +79,13 @@ class RegisterTenantController extends Controller
             // 5. Assign owner_id to tenant
             $tenant->update(['owner_id' => $user->id]);
 
+            // 6. Send welcome email notification
+            try {
+                \Illuminate\Support\Facades\Mail::to($user)->queue(new \App\Mail\TenantWelcomeMail($tenant, $user));
+            } catch (\Throwable $e) {
+                // Ignore mail queue exceptions in local/testing environment
+            }
+
             return $user;
         });
 
