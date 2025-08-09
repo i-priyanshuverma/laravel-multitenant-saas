@@ -15,7 +15,7 @@ class StatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         // Monthly Recurring Revenue calculation
-        $mrr = Subscription::where('stripe_status', 'active')
+        $mrr = (float) Subscription::where('stripe_status', 'active')
             ->join('plans', 'subscriptions.plan_id', '=', 'plans.id')
             ->sum('plans.price_monthly');
 

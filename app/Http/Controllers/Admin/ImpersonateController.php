@@ -17,13 +17,14 @@ class ImpersonateController extends Controller
      */
     public function impersonate(Request $request, Tenant $tenant): RedirectResponse
     {
-        /** @var User $currentUser */
+        /** @var User|null $currentUser */
         $currentUser = Auth::user();
 
         if (!$currentUser || !$currentUser->isSuperAdmin()) {
             abort(403, 'Only super-admins can impersonate tenants.');
         }
 
+        /** @var User|null $owner */
         $owner = $tenant->owner ?: User::where('tenant_id', $tenant->id)->first();
 
         if (!$owner) {
@@ -53,7 +54,8 @@ class ImpersonateController extends Controller
             return redirect('/');
         }
 
-        $superAdmin = User::findOrFail($impersonatorId);
+        /** @var User $superAdmin */
+        $superAdmin = User::where('id', $impersonatorId)->firstOrFail();
         $request->session()->forget('impersonator_id');
 
         /** @var TenantManager $tenantManager */

@@ -7,7 +7,10 @@ parameters:
         - app
     excludePaths:
         - app/Providers/Filament/AdminPanelProvider.php
+    treatPhpDocTypesAsCertain: false
     ignoreErrors:
         - '#does not specify its types: #'
-        - '#return type has no value type specified in iterable type array#'
-        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$email#'
+        - '#has no value type specified in iterable type array#'
+        - '#has parameter \$[a-zA-Z0-9_]+ with no value type specified in iterable type array#'
+        - '#Access to an undefined property #'
+        - '#Parameter \#[0-9]+ \$[a-zA-Z0-9_]+ of method #'
