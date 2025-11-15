@@ -66,9 +66,15 @@ class Tenant extends Model
         return $this->hasMany(PaymentMethod::class, 'tenant_id');
     }
 
+    public function terminate(): bool
+    {
+        $this->update(['status' => 'canceled']);
+        return $this->delete();
+    }
+
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === 'active' && !$this->trashed();
     }
 
     public function onTrial(): bool
