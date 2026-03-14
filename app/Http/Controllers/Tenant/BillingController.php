@@ -54,17 +54,22 @@ class BillingController extends Controller
     {
         $request->validate([
             'plan_id' => ['required', 'exists:plans,id'],
+            'cycle' => ['nullable', 'string', 'in:monthly,yearly'],
         ]);
 
         /** @var TenantManager $tenantManager */
         $tenantManager = app(TenantManager::class);
         $tenant = $tenantManager->getTenant();
 
+        /** @var Plan $plan */
         $plan = Plan::findOrFail($request->plan_id);
+        $cycle = $request->input('cycle', 'monthly');
 
-        $this->subscriptionService->subscribe($tenant, $plan);
+        if ($tenant) {
+            $this->subscriptionService->subscribe($tenant, $plan, $cycle);
+        }
 
-        return back()->with('success', 'Successfully subscribed to the ' . $plan->name . ' plan!');
+        return back()->with('success', 'Successfully subscribed to the ' . $plan->name . ' ' . $cycle . ' plan!');
     }
 
     /**
