@@ -1,5 +1,5 @@
 <script setup>
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
 import TenantLayout from '@/Layouts/TenantLayout.vue';
 
 const page = usePage();
