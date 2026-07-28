@@ -16,11 +16,12 @@ An enterprise-grade, high-throughput Multi-tenant SaaS platform built with **Lar
 
 - **Dynamic Tenant Resolution**: Subdomain (`tenant.saas.com`) and custom domain identification with automatic `X-Tenant` header fallback middleware.
 - **Global Data Isolation**: Eloquent `TenantScoped` trait ensuring zero cross-tenant data leaks at the query builder level.
-- **Vue 3 & Inertia.js Workspace**: Modern dark-mode dashboard, user onboarding, team roster management, and profile settings.
-- **Stripe Subscription Billing Engine**: Integrated Stripe SDK supporting Free, Pro, and Enterprise tiers with webhook handlers for invoice renewals and 7-day grace periods.
-- **FilamentPHP v3 Super-Admin Panel**: Dedicated `/admin` dashboard featuring MRR metrics, active tenant stats, churn reporting widgets, and tenant impersonation mode.
+- **Vue 3 & Inertia.js Workspace**: Modern dark-mode dashboard, user onboarding, team roster management, and profile settings (Inertia v1.2 stack).
+- **Stripe Subscription Billing Engine**: Integrated Stripe SDK supporting Free, Pro, and Enterprise tiers (monthly & annual billing cycles) with webhook handlers for invoice renewals and 7-day grace periods.
+- **Account Termination & Soft Deletes**: Soft delete lifecycle support for tenant account offboarding and workspace restoration.
+- **FilamentPHP v3 Super-Admin Panel**: Dedicated `/admin` dashboard featuring MRR metrics, active tenant stats, recent tenant onboarding tables, churn reporting widgets, and tenant impersonation mode.
 - **Role-Based Access Control (RBAC)**: Powered by Spatie Permissions and team invitation tokens.
-- **Production DevOps Setup**: Optimized Docker Compose stack (PHP 8.2-FPM, Nginx, PostgreSQL 16, Redis), Kubernetes deployment manifests, and GitHub Actions CI.
+- **Production DevOps Setup**: Optimized Docker Compose stack (PHP 8.2-FPM, Nginx, PostgreSQL 16, Redis), Kubernetes deployment manifests, database query indexing, and GitHub Actions CI.
 
 ---
 

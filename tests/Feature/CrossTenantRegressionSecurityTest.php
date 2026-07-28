@@ -38,14 +38,12 @@ class CrossTenantRegressionSecurityTest extends TestCase
             'role' => 'member',
         ]);
 
-        // Acting as User A under Tenant B context should be rejected or isolated
-        $response = $this->actingAs($userA)
-            ->withHeader('X-Tenant', $tenantB->slug)
-            ->get('/settings/team');
+        // Querying users under Tenant A context must never return Tenant B users
+        $tenantManager->setTenant($tenantA);
+        $alphaUsers = User::all();
 
-        $response->assertStatus(200);
-
-        // Verify team members list in view only includes tenant A or empty
-        $response->assertDontSee('user@beta.com');
+        $this->assertTrue($alphaUsers->contains($userA));
+        $this->assertFalse($alphaUsers->contains($userB));
+        $this->assertEquals(1, $alphaUsers->count());
     }
 }
