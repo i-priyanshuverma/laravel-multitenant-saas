@@ -26,7 +26,7 @@ class TeamInvitationController extends Controller
         /** @var TenantManager $tenantManager */
         $tenantManager = app(TenantManager::class);
 
-        if (!$tenantManager->hasTenant()) {
+        if (! $tenantManager->hasTenant()) {
             return back()->with('error', 'Active tenant context required.');
         }
 
@@ -38,7 +38,7 @@ class TeamInvitationController extends Controller
             'expires_at' => now()->addDays(7),
         ]);
 
-        return back()->with('success', 'Invitation created successfully for ' . $invitation->email);
+        return back()->with('success', 'Invitation created successfully for '.$invitation->email);
     }
 
     /**
@@ -60,7 +60,7 @@ class TeamInvitationController extends Controller
         // Check if user already exists
         $user = User::where('email', $invitation->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'tenant_id' => $invitation->tenant_id,
                 'name' => explode('@', $invitation->email)[0],

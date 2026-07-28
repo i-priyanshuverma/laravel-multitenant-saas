@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Models\Domain;
 use App\Models\Tenant;
 use App\Services\TenantManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;

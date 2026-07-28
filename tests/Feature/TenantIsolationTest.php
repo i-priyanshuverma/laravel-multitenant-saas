@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantManager;
@@ -14,7 +13,9 @@ class TenantIsolationTest extends TestCase
     use RefreshDatabase;
 
     protected Tenant $tenantA;
+
     protected Tenant $tenantB;
+
     protected TenantManager $tenantManager;
 
     protected function setUp(): void

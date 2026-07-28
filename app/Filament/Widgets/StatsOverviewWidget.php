@@ -24,7 +24,7 @@ class StatsOverviewWidget extends BaseWidget
         $totalUsers = User::count();
 
         return [
-            Stat::make('Monthly Recurring Revenue (MRR)', '$' . number_format($mrr, 2))
+            Stat::make('Monthly Recurring Revenue (MRR)', '$'.number_format($mrr, 2))
                 ->description('Active recurring subscriptions')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),

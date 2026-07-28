@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\EnsureTenantIsSet;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\IdentifyTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,8 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\IdentifyTenant::class,
-            \App\Http\Middleware\HandleInertiaRequests::class,
+            IdentifyTenant::class,
+            HandleInertiaRequests::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -21,8 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'tenant.identify' => \App\Http\Middleware\IdentifyTenant::class,
-            'tenant.ensure' => \App\Http\Middleware\EnsureTenantIsSet::class,
+            'tenant.identify' => IdentifyTenant::class,
+            'tenant.ensure' => EnsureTenantIsSet::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

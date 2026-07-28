@@ -15,7 +15,9 @@ class SubscriptionBillingTest extends TestCase
     use RefreshDatabase;
 
     protected Tenant $tenant;
+
     protected User $user;
+
     protected Plan $proPlan;
 
     protected function setUp(): void

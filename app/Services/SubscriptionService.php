@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class SubscriptionService
 {
-    public function __construct(protected StripeService $stripeService)
-    {
-    }
+    public function __construct(protected StripeService $stripeService) {}
 
     /**
      * Subscribe or upgrade a tenant to a plan with monthly or annual billing cycle.
@@ -31,7 +29,7 @@ class SubscriptionService
                 'tenant_id' => $tenant->id,
                 'plan_id' => $plan->id,
                 'type' => $cycle,
-                'stripe_id' => 'sub_live_' . uniqid(),
+                'stripe_id' => 'sub_live_'.uniqid(),
                 'stripe_status' => 'active',
                 'stripe_price' => $plan->stripe_price_id,
                 'quantity' => 1,

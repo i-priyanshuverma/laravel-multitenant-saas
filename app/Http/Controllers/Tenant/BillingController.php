@@ -17,8 +17,7 @@ class BillingController extends Controller
     public function __construct(
         protected StripeService $stripeService,
         protected SubscriptionService $subscriptionService
-    ) {
-    }
+    ) {}
 
     /**
      * Display subscription plans and payment methods.
@@ -69,7 +68,7 @@ class BillingController extends Controller
             $this->subscriptionService->subscribe($tenant, $plan, $cycle);
         }
 
-        return back()->with('success', 'Successfully subscribed to the ' . $plan->name . ' ' . $cycle . ' plan!');
+        return back()->with('success', 'Successfully subscribed to the '.$plan->name.' '.$cycle.' plan!');
     }
 
     /**

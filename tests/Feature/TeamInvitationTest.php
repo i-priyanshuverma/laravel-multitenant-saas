@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\TeamInvitation;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantManager;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\TenantWelcomeMail;
 use App\Models\Domain;
 use App\Models\Plan;
 use App\Models\Tenant;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -53,8 +55,8 @@ class RegisterTenantController extends Controller
 
             // 2. Create primary domain for tenant
             $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?: 'localhost';
-            $domain = strtolower($request->company_slug) . '.' . $appHost;
-            
+            $domain = strtolower($request->company_slug).'.'.$appHost;
+
             Domain::create([
                 'tenant_id' => $tenant->id,
                 'domain' => $domain,
@@ -81,7 +83,7 @@ class RegisterTenantController extends Controller
 
             // 6. Send welcome email notification
             try {
-                \Illuminate\Support\Facades\Mail::to($user)->queue(new \App\Mail\TenantWelcomeMail($tenant, $user));
+                Mail::to($user)->queue(new TenantWelcomeMail($tenant, $user));
             } catch (\Throwable $e) {
                 // Ignore mail queue exceptions in local/testing environment
             }

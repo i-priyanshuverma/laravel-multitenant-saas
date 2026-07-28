@@ -29,13 +29,13 @@ class PasswordResetController extends Controller
 
         $user = $query->where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->with('error', 'We cannot find a user with that email address in this workspace.');
         }
 
         // Generate token and send link with tenant query parameter to prevent redirect loop
         $token = Password::getRepository()->create($user);
-        
+
         $redirectUrl = route('password.reset', [
             'token' => $token,
             'email' => $user->email,

@@ -63,7 +63,7 @@ class AdminPanelAuthorizationTest extends TestCase
 
         $tenant->update(['owner_id' => $owner->id]);
 
-        $response = $this->actingAs($admin)->get('/admin/impersonate/' . $tenant->id);
+        $response = $this->actingAs($admin)->get('/admin/impersonate/'.$tenant->id);
 
         $response->assertRedirect('/dashboard');
         $this->assertEquals($owner->id, auth()->id());

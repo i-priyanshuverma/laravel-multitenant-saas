@@ -18,7 +18,7 @@ class TenantScope implements Scope
         $tenantManager = app(TenantManager::class);
 
         if ($tenantManager->hasTenant()) {
-            $builder->where($model->getTable() . '.tenant_id', '=', $tenantManager->getTenantId());
+            $builder->where($model->getTable().'.tenant_id', '=', $tenantManager->getTenantId());
         }
     }
 }

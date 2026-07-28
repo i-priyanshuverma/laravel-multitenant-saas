@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subscription;
-use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +16,7 @@ class StripeWebhookController extends Controller
     {
         $payload = json_decode($request->getContent(), true);
 
-        if (!$payload || !isset($payload['type'])) {
+        if (! $payload || ! isset($payload['type'])) {
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
@@ -45,7 +44,7 @@ class StripeWebhookController extends Controller
     protected function handleInvoicePaymentSucceeded(array $invoice): void
     {
         $stripeSubscriptionId = $invoice['subscription'] ?? null;
-        if (!$stripeSubscriptionId) {
+        if (! $stripeSubscriptionId) {
             return;
         }
 
@@ -65,7 +64,7 @@ class StripeWebhookController extends Controller
     protected function handleInvoicePaymentFailed(array $invoice): void
     {
         $stripeSubscriptionId = $invoice['subscription'] ?? null;
-        if (!$stripeSubscriptionId) {
+        if (! $stripeSubscriptionId) {
             return;
         }
 

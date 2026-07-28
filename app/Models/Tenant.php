@@ -69,12 +69,13 @@ class Tenant extends Model
     public function terminate(): bool
     {
         $this->update(['status' => 'canceled']);
+
         return (bool) $this->delete();
     }
 
     public function isActive(): bool
     {
-        return $this->status === 'active' && !$this->trashed();
+        return $this->status === 'active' && ! $this->trashed();
     }
 
     public function onTrial(): bool

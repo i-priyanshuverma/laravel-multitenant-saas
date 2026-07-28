@@ -20,14 +20,14 @@ class ImpersonateController extends Controller
         /** @var User|null $currentUser */
         $currentUser = Auth::user();
 
-        if (!$currentUser || !$currentUser->isSuperAdmin()) {
+        if (! $currentUser || ! $currentUser->isSuperAdmin()) {
             abort(403, 'Only super-admins can impersonate tenants.');
         }
 
         /** @var User|null $owner */
         $owner = $tenant->owner ?: User::where('tenant_id', $tenant->id)->first();
 
-        if (!$owner) {
+        if (! $owner) {
             return back()->with('error', 'Tenant has no assigned user or owner to impersonate.');
         }
 
@@ -40,7 +40,7 @@ class ImpersonateController extends Controller
 
         Auth::login($owner);
 
-        return redirect('/dashboard')->with('success', 'Now impersonating workspace: ' . $tenant->name);
+        return redirect('/dashboard')->with('success', 'Now impersonating workspace: '.$tenant->name);
     }
 
     /**
@@ -50,7 +50,7 @@ class ImpersonateController extends Controller
     {
         $impersonatorId = $request->session()->get('impersonator_id');
 
-        if (!$impersonatorId) {
+        if (! $impersonatorId) {
             return redirect('/');
         }
 

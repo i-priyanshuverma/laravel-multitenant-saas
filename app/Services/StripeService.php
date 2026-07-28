@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\PaymentMethod;
 use App\Models\Tenant;
 use Stripe\Customer;
-use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\SetupIntent;
 use Stripe\StripeClient;
 
@@ -32,9 +31,10 @@ class StripeService
 
         // Mock mode or offline fallback
         if (config('services.stripe.secret') === null || str_contains(config('services.stripe.secret'), 'mock')) {
-            $stripeId = 'cus_mock_' . $tenant->id;
+            $stripeId = 'cus_mock_'.$tenant->id;
             $extraData['stripe_id'] = $stripeId;
             $tenant->update(['extra_data' => $extraData]);
+
             return $stripeId;
         }
 
@@ -62,7 +62,7 @@ class StripeService
 
         if (str_contains(config('services.stripe.secret', ''), 'mock')) {
             return [
-                'client_secret' => 'seti_mock_secret_' . $tenant->id,
+                'client_secret' => 'seti_mock_secret_'.$tenant->id,
             ];
         }
 
@@ -88,7 +88,7 @@ class StripeService
         $expMonth = '12';
         $expYear = '2028';
 
-        if (!str_contains(config('services.stripe.secret', ''), 'mock')) {
+        if (! str_contains(config('services.stripe.secret', ''), 'mock')) {
             try {
                 $pm = $this->client->paymentMethods->retrieve($stripePaymentMethodId);
                 $pm->attach(['customer' => $customerId]);

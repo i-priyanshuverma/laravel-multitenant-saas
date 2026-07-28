@@ -10,16 +10,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EnsureTenantIsSet
 {
-    public function __construct(protected TenantManager $tenantManager)
-    {
-    }
+    public function __construct(protected TenantManager $tenantManager) {}
 
     /**
      * Handle an incoming request.
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$this->tenantManager->hasTenant()) {
+        if (! $this->tenantManager->hasTenant()) {
             throw new NotFoundHttpException('Tenant not found or invalid tenant context.');
         }
 
