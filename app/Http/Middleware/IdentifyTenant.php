@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Services\TenantManager;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class IdentifyTenant
@@ -38,7 +39,13 @@ class IdentifyTenant
         // 1. Check Header (X-Tenant or X-Tenant-ID)
         $tenantHeader = $request->header('X-Tenant') ?: $request->header('X-Tenant-ID');
         if ($tenantHeader && is_string($tenantHeader)) {
-            $tenant = Tenant::where('id', $tenantHeader)->orWhere('slug', $tenantHeader)->first();
+            $query = Tenant::query();
+            if (Str::isUuid($tenantHeader)) {
+                $query->where('id', $tenantHeader)->orWhere('slug', $tenantHeader);
+            } else {
+                $query->where('slug', $tenantHeader);
+            }
+            $tenant = $query->first();
             if ($tenant instanceof Tenant) {
                 return $tenant;
             }
