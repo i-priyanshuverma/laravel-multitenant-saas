@@ -18,6 +18,7 @@ An enterprise-grade, high-throughput Multi-tenant SaaS platform built with **Lar
 - **Global Data Isolation**: Eloquent `TenantScoped` trait ensuring zero cross-tenant data leaks at the query builder level.
 - **Vue 3 & Inertia.js Workspace**: Modern dark-mode dashboard, user onboarding, team roster management, and profile settings (Inertia v1.2 stack).
 - **Stripe Subscription Billing Engine**: Integrated Stripe SDK supporting Free, Pro, and Enterprise tiers (monthly & annual billing cycles) with webhook handlers for invoice renewals and 7-day grace periods.
+- **Plan Usage Limits & Quota Enforcement**: Tier-based seat and storage limits enforcement (`PlanLimitService`) with route middleware (`EnforcePlanLimits`) to protect resource creation (team invitations, member seats) with automated upgrade prompts.
 - **Account Termination & Soft Deletes**: Soft delete lifecycle support for tenant account offboarding and workspace restoration.
 - **FilamentPHP v3 Super-Admin Panel**: Dedicated `/admin` dashboard featuring MRR metrics, active tenant stats, recent tenant onboarding tables, churn reporting widgets, and tenant impersonation mode.
 - **Role-Based Access Control (RBAC)**: Powered by Spatie Permissions and team invitation tokens.
@@ -99,10 +100,13 @@ Access the application at `http://localhost:8080` or `http://acme.localhost:8080
 ## 🧪 Testing & Quality Assurance
 
 ```bash
-# Run PHPUnit test suite
-php artisan test
+# Run PHPUnit test suite (in parallel)
+php artisan test --parallel
 
-# Run PHPStan Level 8 static analysis
+# Code style checking and formatting (Laravel Pint)
+./vendor/bin/pint --test
+
+# Run PHPStan static analysis
 ./vendor/bin/phpstan analyse --memory-limit=1G
 
 # Build production assets
