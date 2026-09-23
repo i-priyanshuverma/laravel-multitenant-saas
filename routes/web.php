@@ -47,7 +47,7 @@ Route::post('/admin/impersonate/leave', [ImpersonateController::class, 'leave'])
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::post('/team/invitations', [TeamInvitationController::class, 'store'])->name('team.invitations.store');
+    Route::post('/team/invitations', [TeamInvitationController::class, 'store'])->middleware('plan.limits:users')->name('team.invitations.store');
     Route::get('/settings/team', [TeamController::class, 'index'])->name('team.index');
     Route::delete('/settings/team/{user}', [TeamController::class, 'destroy'])->name('team.destroy');
 
