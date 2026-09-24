@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use App\Services\PlanLimitService;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,6 +48,11 @@ class TeamController extends Controller
         }
 
         $user->delete();
+
+        $tenant = $tenantManager->getTenant();
+        if ($tenant) {
+            app(PlanLimitService::class)->resetThresholdCache($tenant, 'users');
+        }
 
         return back()->with('success', 'Team member removed successfully.');
     }

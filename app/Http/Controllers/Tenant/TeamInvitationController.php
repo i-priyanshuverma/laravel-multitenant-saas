@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use App\Services\PlanLimitService;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -75,7 +76,12 @@ class TeamInvitationController extends Controller
             ]);
         }
 
+        $tenant = $invitation->tenant;
         $invitation->delete();
+
+        if ($tenant) {
+            app(PlanLimitService::class)->checkAndNotifyThreshold($tenant, 'users');
+        }
 
         return redirect('/login')->with('success', 'Invitation accepted! Please sign in to your new workspace.');
     }

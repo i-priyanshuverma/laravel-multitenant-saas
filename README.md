@@ -18,7 +18,7 @@ An enterprise-grade, high-throughput Multi-tenant SaaS platform built with **Lar
 - **Global Data Isolation**: Eloquent `TenantScoped` trait ensuring zero cross-tenant data leaks at the query builder level.
 - **Vue 3 & Inertia.js Workspace**: Modern dark-mode dashboard, user onboarding, team roster management, and profile settings (Inertia v1.2 stack).
 - **Stripe Subscription Billing Engine**: Integrated Stripe SDK supporting Free, Pro, and Enterprise tiers (monthly & annual billing cycles) with webhook handlers for invoice renewals and 7-day grace periods.
-- **Plan Usage Limits & Quota Enforcement**: Tier-based seat and storage limits enforcement (`PlanLimitService`) with route middleware (`EnforcePlanLimits`) to protect resource creation (team invitations, member seats) with automated upgrade prompts.
+- **Plan Usage Limits & Quota Enforcement**: Tier-based seat and storage limits enforcement (`PlanLimitService`) with route middleware (`EnforcePlanLimits`) to protect resource creation (team invitations, member seats) with automated upgrade prompts, 80% & 100% threshold notifications (`PlanLimitThresholdNotification`), and scheduled limit scanner (`tenants:check-plan-limits`).
 - **Account Termination & Soft Deletes**: Soft delete lifecycle support for tenant account offboarding and workspace restoration.
 - **FilamentPHP v3 Super-Admin Panel**: Dedicated `/admin` dashboard featuring MRR metrics, active tenant stats, recent tenant onboarding tables, churn reporting widgets, and tenant impersonation mode.
 - **Role-Based Access Control (RBAC)**: Powered by Spatie Permissions and team invitation tokens.
