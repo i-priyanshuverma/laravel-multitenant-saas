@@ -48,19 +48,22 @@ Route::post('/admin/impersonate/leave', [ImpersonateController::class, 'leave'])
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::post('/team/invitations', [TeamInvitationController::class, 'store'])->middleware('plan.limits:users')->name('team.invitations.store');
-    Route::get('/settings/team', [TeamController::class, 'index'])->name('team.index');
-    Route::delete('/settings/team/{user}', [TeamController::class, 'destroy'])->name('team.destroy');
-
     Route::get('/settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/settings/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
-    Route::post('/billing/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
-    Route::post('/billing/payment-methods', [BillingController::class, 'storePaymentMethod'])->name('billing.pm.store');
+    // Tenant-scoped routes requiring resolved active workspace context
+    Route::middleware('tenant.ensure')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+        Route::post('/team/invitations', [TeamInvitationController::class, 'store'])->middleware('plan.limits:users')->name('team.invitations.store');
+        Route::get('/settings/team', [TeamController::class, 'index'])->name('team.index');
+        Route::delete('/settings/team/{user}', [TeamController::class, 'destroy'])->name('team.destroy');
+
+        Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+        Route::post('/billing/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
+        Route::post('/billing/payment-methods', [BillingController::class, 'storePaymentMethod'])->name('billing.pm.store');
+    });
 });

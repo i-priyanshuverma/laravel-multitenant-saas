@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Stripe\Webhook;
 use Symfony\Component\HttpFoundation\Response;
 
 class StripeWebhookController extends Controller
@@ -14,9 +16,24 @@ class StripeWebhookController extends Controller
      */
     public function handleWebhook(Request $request): Response
     {
+        $signature = $request->header('Stripe-Signature');
+        $secret = config('services.stripe.webhook_secret');
+
+        if ($secret && is_string($signature)) {
+            try {
+                Webhook::constructEvent(
+                    $request->getContent(),
+                    $signature,
+                    $secret
+                );
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Invalid webhook signature: '.$e->getMessage()], 400);
+            }
+        }
+
         $payload = json_decode($request->getContent(), true);
 
-        if (! $payload || ! isset($payload['type'])) {
+        if (! is_array($payload) || ! isset($payload['type'])) {
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
@@ -37,6 +54,10 @@ class StripeWebhookController extends Controller
                 $this->handleSubscriptionUpdatedOrDeleted($data);
                 break;
         }
+
+        Log::info('Stripe webhook processed', [
+            'event' => $event,
+        ]);
 
         return response()->json(['status' => 'success']);
     }

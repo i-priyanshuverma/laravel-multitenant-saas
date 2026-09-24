@@ -14,8 +14,18 @@ class StripeService
 
     public function __construct()
     {
-        $secretKey = config('services.stripe.secret') ?: 'sk_test_mock';
+        $secretKey = $this->isMockMode() ? 'sk_test_mock' : (string) config('services.stripe.secret');
         $this->client = new StripeClient($secretKey);
+    }
+
+    /**
+     * Determine if Stripe is running in mock/testing mode.
+     */
+    protected function isMockMode(): bool
+    {
+        $secret = (string) config('services.stripe.secret', '');
+
+        return app()->environment('testing') || empty($secret) || str_contains($secret, 'mock') || str_contains($secret, 'sample');
     }
 
     /**
@@ -23,14 +33,15 @@ class StripeService
      */
     public function getOrCreateCustomer(Tenant $tenant): string
     {
-        $extraData = $tenant->extra_data ?? [];
+        /** @var array<string, mixed> $extraData */
+        $extraData = is_array($tenant->extra_data) ? $tenant->extra_data : [];
 
         if (isset($extraData['stripe_id'])) {
             return $extraData['stripe_id'];
         }
 
         // Mock mode or offline fallback
-        if (config('services.stripe.secret') === null || str_contains(config('services.stripe.secret'), 'mock')) {
+        if ($this->isMockMode()) {
             $stripeId = 'cus_mock_'.$tenant->id;
             $extraData['stripe_id'] = $stripeId;
             $tenant->update(['extra_data' => $extraData]);
@@ -60,7 +71,7 @@ class StripeService
     {
         $customerId = $this->getOrCreateCustomer($tenant);
 
-        if (str_contains(config('services.stripe.secret', ''), 'mock')) {
+        if ($this->isMockMode()) {
             return [
                 'client_secret' => 'seti_mock_secret_'.$tenant->id,
             ];
@@ -88,7 +99,7 @@ class StripeService
         $expMonth = '12';
         $expYear = '2028';
 
-        if (! str_contains(config('services.stripe.secret', ''), 'mock')) {
+        if (! $this->isMockMode()) {
             try {
                 $pm = $this->client->paymentMethods->retrieve($stripePaymentMethodId);
                 $pm->attach(['customer' => $customerId]);
