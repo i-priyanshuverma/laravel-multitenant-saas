@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Models\Traits\TenantScoped;
+use App\Notifications\ResetPasswordNotification;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,6 +34,7 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
+            'role' => UserRole::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_super_admin' => 'boolean',
@@ -55,6 +58,9 @@ class User extends Authenticatable implements FilamentUser
      */
     public function sendPasswordResetNotification($token): void
     {
-        $this->notify(new \App\Notifications\ResetPasswordNotification($token, $this->tenant));
+        /** @var Tenant|null $tenant */
+        $tenant = $this->tenant;
+
+        $this->notify(new ResetPasswordNotification($token, $tenant));
     }
 }

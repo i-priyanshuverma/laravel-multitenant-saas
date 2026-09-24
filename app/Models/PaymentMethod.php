@@ -21,7 +21,15 @@ class PaymentMethod extends Model
         'is_default',
     ];
 
-    protected $casts = [
-        'is_default' => 'boolean',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_default' => 'boolean',
+        ];
+    }
 }

@@ -31,11 +31,10 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
         $email = property_exists($notifiable, 'email') ? $notifiable->email : '';
 
         $baseUrl = $this->tenant
-            ? 'http://'.$this->tenant->slug.'.'.$appHost
+            ? $this->tenant->url()
             : (string) config('app.url');
 
         $resetUrl = rtrim($baseUrl, '/').'/reset-password/'.$this->token.'?email='.urlencode((string) $email);

@@ -17,6 +17,9 @@ class SubscriptionService
     public function subscribe(Tenant $tenant, Plan $plan, string $cycle = 'monthly'): Subscription
     {
         return DB::transaction(function () use ($tenant, $plan, $cycle) {
+            // Ensure Stripe customer entity exists
+            $this->stripeService->getOrCreateCustomer($tenant);
+
             // Cancel existing active or trialing subscriptions
             Subscription::where('tenant_id', $tenant->id)
                 ->whereIn('stripe_status', ['active', 'trialing', 'past_due'])

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\TenantStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $trial_ends_at
+ */
 class Tenant extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
@@ -24,10 +30,29 @@ class Tenant extends Model
         'extra_data',
     ];
 
-    protected $casts = [
-        'trial_ends_at' => 'datetime',
-        'extra_data' => 'array',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string|class-string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => TenantStatus::class,
+            'trial_ends_at' => 'datetime',
+            'extra_data' => 'array',
+        ];
+    }
+
+    /**
+     * Scope a query to only include active tenants.
+     *
+     * @param  Builder<Tenant>  $query
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('status', TenantStatus::Active);
+    }
 
     public function plan(): BelongsTo
     {
@@ -75,11 +100,24 @@ class Tenant extends Model
 
     public function isActive(): bool
     {
-        return $this->status === 'active' && ! $this->trashed();
+        $isActiveStatus = $this->status === TenantStatus::Active || $this->status === 'active';
+
+        return $isActiveStatus && ! $this->trashed();
     }
 
     public function onTrial(): bool
     {
         return $this->trial_ends_at !== null && $this->trial_ends_at->isFuture();
+    }
+
+    /**
+     * Get the fully qualified workspace URL for this tenant.
+     */
+    public function url(string $path = ''): string
+    {
+        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
+        $baseUrl = 'http://'.$this->slug.'.'.$appHost;
+
+        return rtrim($baseUrl, '/').'/'.ltrim($path, '/');
     }
 }

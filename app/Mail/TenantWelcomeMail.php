@@ -29,13 +29,10 @@ class TenantWelcomeMail extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
-        $appHost = parse_url(config('app.url'), PHP_URL_HOST) ?: 'localhost';
-        $workspaceUrl = 'http://'.$this->tenant->slug.'.'.$appHost.'/dashboard';
-
         return new Content(
             view: 'emails.tenant-welcome',
             with: [
-                'workspaceUrl' => $workspaceUrl,
+                'workspaceUrl' => $this->tenant->url('/dashboard'),
             ],
         );
     }

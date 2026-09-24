@@ -34,8 +34,7 @@ class PlanLimitThresholdNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
-        $billingUrl = 'http://'.$this->tenant->slug.'.'.$appHost.'/billing';
+        $billingUrl = $this->tenant->url('/billing');
         $notifiableName = property_exists($notifiable, 'name') ? $notifiable->name : 'Team Admin';
 
         $isCritical = $this->threshold >= 100;
@@ -69,9 +68,6 @@ class PlanLimitThresholdNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
-        $billingUrl = 'http://'.$this->tenant->slug.'.'.$appHost.'/billing';
-
         return [
             'tenant_id' => $this->tenant->id,
             'tenant_name' => $this->tenant->name,
@@ -79,7 +75,7 @@ class PlanLimitThresholdNotification extends Notification
             'current_usage' => $this->currentUsage,
             'max_limit' => $this->maxLimit,
             'threshold' => $this->threshold,
-            'billing_url' => $billingUrl,
+            'billing_url' => $this->tenant->url('/billing'),
         ];
     }
 }

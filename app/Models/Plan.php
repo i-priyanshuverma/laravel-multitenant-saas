@@ -23,14 +23,22 @@ class Plan extends Model
         'is_active',
     ];
 
-    protected $casts = [
-        'price_monthly' => 'decimal:2',
-        'price_yearly' => 'decimal:2',
-        'max_users' => 'integer',
-        'max_storage_gb' => 'integer',
-        'features' => 'array',
-        'is_active' => 'boolean',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'price_monthly' => 'decimal:2',
+            'price_yearly' => 'decimal:2',
+            'max_users' => 'integer',
+            'max_storage_gb' => 'integer',
+            'features' => 'array',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function tenants(): HasMany
     {

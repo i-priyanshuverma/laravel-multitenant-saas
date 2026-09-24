@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Enums\TenantStatus;
 use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,7 +26,7 @@ class TenantSoftDeleteTest extends TestCase
         $this->assertSoftDeleted('tenants', [
             'id' => $tenant->id,
         ]);
-        $this->assertEquals('canceled', $tenant->fresh()->status);
+        $this->assertEquals(TenantStatus::Canceled, $tenant->fresh()->status);
         $this->assertFalse($tenant->fresh()->isActive());
     }
 }
