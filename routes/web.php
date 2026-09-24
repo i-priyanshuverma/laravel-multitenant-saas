@@ -34,6 +34,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', function ($token) {
         return Inertia::render('Auth/ResetPassword', ['token' => $token]);
     })->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 
 Route::get('/invitations/{token}/accept', [TeamInvitationController::class, 'accept'])->name('invitations.accept');

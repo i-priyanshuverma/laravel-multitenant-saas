@@ -47,4 +47,14 @@ class User extends Authenticatable implements FilamentUser
     {
         return (bool) $this->is_super_admin;
     }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token, $this->tenant));
+    }
 }
