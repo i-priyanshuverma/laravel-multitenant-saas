@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\CheckoutRequest;
+use App\Http\Requests\Tenant\StorePaymentMethodRequest;
 use App\Models\Plan;
 use App\Services\StripeService;
 use App\Services\SubscriptionService;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class BillingController extends Controller
 {
     public function __construct(
+        protected TenantManager $tenantManager,
         protected StripeService $stripeService,
         protected SubscriptionService $subscriptionService
     ) {}
@@ -24,9 +26,7 @@ class BillingController extends Controller
      */
     public function index(): Response
     {
-        /** @var TenantManager $tenantManager */
-        $tenantManager = app(TenantManager::class);
-        $tenant = $tenantManager->getTenant();
+        $tenant = $this->tenantManager->getTenant();
 
         $plans = Plan::where('is_active', true)->get();
         $subscription = $tenant?->activeSubscription;
@@ -49,20 +49,13 @@ class BillingController extends Controller
     /**
      * Handle checkout / plan upgrade via SubscriptionService.
      */
-    public function checkout(Request $request): RedirectResponse
+    public function checkout(CheckoutRequest $request): RedirectResponse
     {
-        $request->validate([
-            'plan_id' => ['required', 'exists:plans,id'],
-            'cycle' => ['nullable', 'string', 'in:monthly,yearly'],
-        ]);
-
-        /** @var TenantManager $tenantManager */
-        $tenantManager = app(TenantManager::class);
-        $tenant = $tenantManager->getTenant();
+        $tenant = $this->tenantManager->getTenant();
 
         /** @var Plan $plan */
-        $plan = Plan::findOrFail($request->plan_id);
-        $cycle = $request->input('cycle', 'monthly');
+        $plan = Plan::findOrFail($request->validated('plan_id'));
+        $cycle = (string) $request->input('cycle', 'monthly');
 
         if ($tenant) {
             $this->subscriptionService->subscribe($tenant, $plan, $cycle);
@@ -74,17 +67,13 @@ class BillingController extends Controller
     /**
      * Store new payment method for tenant.
      */
-    public function storePaymentMethod(Request $request): RedirectResponse
+    public function storePaymentMethod(StorePaymentMethodRequest $request): RedirectResponse
     {
-        $request->validate([
-            'payment_method_id' => ['required', 'string'],
-        ]);
+        $tenant = $this->tenantManager->getTenant();
 
-        /** @var TenantManager $tenantManager */
-        $tenantManager = app(TenantManager::class);
-        $tenant = $tenantManager->getTenant();
-
-        $this->stripeService->savePaymentMethod($tenant, $request->payment_method_id);
+        if ($tenant) {
+            $this->stripeService->savePaymentMethod($tenant, (string) $request->validated('payment_method_id'));
+        }
 
         return back()->with('success', 'Payment method saved successfully.');
     }

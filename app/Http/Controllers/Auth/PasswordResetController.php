@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules;
 
 class PasswordResetController extends Controller
 {
@@ -20,12 +20,8 @@ class PasswordResetController extends Controller
     /**
      * Send a password reset link to the given user.
      */
-    public function sendResetLinkEmail(Request $request): RedirectResponse
+    public function sendResetLinkEmail(ForgotPasswordRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email' => ['required', 'string', 'email'],
-        ]);
-
         /** @var User|null $user */
         $user = User::where('email', strtolower($request->email))->first();
 
@@ -41,14 +37,8 @@ class PasswordResetController extends Controller
     /**
      * Reset the given user's password.
      */
-    public function reset(Request $request): RedirectResponse
+    public function reset(ResetPasswordRequest $request): RedirectResponse
     {
-        $request->validate([
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
         $status = Password::broker()->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password): void {

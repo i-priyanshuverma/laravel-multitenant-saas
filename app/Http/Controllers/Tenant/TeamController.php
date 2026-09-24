@@ -9,21 +9,26 @@ use App\Services\PlanLimitService;
 use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TeamController extends Controller
 {
+    public function __construct(
+        protected TenantManager $tenantManager,
+        protected PlanLimitService $planLimitService,
+    ) {}
+
     /**
      * Display team management roster and invitations.
      */
     public function index(Request $request): Response
     {
-        /** @var TenantManager $tenantManager */
-        $tenantManager = app(TenantManager::class);
+        $tenant = $this->tenantManager->getTenant();
 
-        $members = User::where('tenant_id', $tenantManager->getTenantId())->get();
-        $invitations = TeamInvitation::where('tenant_id', $tenantManager->getTenantId())->get();
+        $members = $tenant ? $tenant->users : collect();
+        $invitations = $tenant ? TeamInvitation::where('tenant_id', $tenant->id)->get() : collect();
 
         return Inertia::render('Settings/Team', [
             'members' => $members,
@@ -36,22 +41,13 @@ class TeamController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        /** @var TenantManager $tenantManager */
-        $tenantManager = app(TenantManager::class);
-
-        if ($user->tenant_id !== $tenantManager->getTenantId()) {
-            abort(403);
-        }
-
-        if ($user->role === 'owner') {
-            return back()->with('error', 'Cannot remove workspace owner.');
-        }
+        Gate::authorize('delete', $user);
 
         $user->delete();
 
-        $tenant = $tenantManager->getTenant();
+        $tenant = $this->tenantManager->getTenant();
         if ($tenant) {
-            app(PlanLimitService::class)->resetThresholdCache($tenant, 'users');
+            $this->planLimitService->resetThresholdCache($tenant, 'users');
         }
 
         return back()->with('success', 'Team member removed successfully.');

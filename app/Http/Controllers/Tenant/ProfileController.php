@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\UpdatePasswordRequest;
+use App\Http\Requests\Tenant\UpdateProfileRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,19 +34,12 @@ class ProfileController extends Controller
     /**
      * Update user profile information.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateProfileRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-        ]);
-
         /** @var User $user */
         $user = $request->user();
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+
+        $user->update($request->validated());
 
         return back()->with('success', 'Profile information updated successfully.');
     }
@@ -53,17 +47,12 @@ class ProfileController extends Controller
     /**
      * Update user password.
      */
-    public function updatePassword(Request $request): RedirectResponse
+    public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
-        ]);
-
         /** @var User $user */
         $user = $request->user();
         $user->update([
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make((string) $request->validated('password')),
         ]);
 
         return back()->with('success', 'Password updated successfully.');
