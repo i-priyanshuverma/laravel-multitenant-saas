@@ -12,6 +12,7 @@ use App\Services\TenantManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -29,6 +30,8 @@ class TeamInvitationController extends Controller
      */
     public function store(StoreInvitationRequest $request): RedirectResponse
     {
+        Gate::authorize('create', TeamInvitation::class);
+
         $tenant = $this->tenantManager->getTenant();
 
         if (! $tenant) {
@@ -129,5 +132,51 @@ class TeamInvitationController extends Controller
         $tenantName = $tenant ? $tenant->name : 'the workspace';
 
         return redirect('/dashboard')->with('success', "Welcome to {$tenantName}! Your invitation has been accepted.");
+    }
+
+    /**
+     * Revoke / cancel a pending team invitation.
+     */
+    public function destroy(TeamInvitation $invitation): RedirectResponse
+    {
+        Gate::authorize('delete', $invitation);
+
+        $email = $invitation->email;
+        $invitation->delete();
+
+        Log::info('Team invitation revoked', [
+            'tenant_id' => $invitation->tenant_id,
+            'email' => $email,
+        ]);
+
+        return back()->with('success', "Invitation for {$email} has been revoked.");
+    }
+
+    /**
+     * Resend a pending team invitation.
+     */
+    public function resend(TeamInvitation $invitation): RedirectResponse
+    {
+        Gate::authorize('resend', $invitation);
+
+        $invitation->update([
+            'token' => Str::random(32),
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        try {
+            Mail::to($invitation->email)->queue(new TeamInvitationMail($invitation));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to queue resent invitation email: '.$e->getMessage(), [
+                'invitation_id' => $invitation->id,
+            ]);
+        }
+
+        Log::info('Team invitation resent', [
+            'tenant_id' => $invitation->tenant_id,
+            'email' => $invitation->email,
+        ]);
+
+        return back()->with('success', "Invitation resent successfully to {$invitation->email}.");
     }
 }

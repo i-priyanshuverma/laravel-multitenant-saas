@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\UpdateTeamMemberRoleRequest;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use App\Services\PlanLimitService;
@@ -51,5 +52,19 @@ class TeamController extends Controller
         }
 
         return back()->with('success', 'Team member removed successfully.');
+    }
+
+    /**
+     * Update a team member's role.
+     */
+    public function updateRole(UpdateTeamMemberRoleRequest $request, User $user): RedirectResponse
+    {
+        Gate::authorize('update', $user);
+
+        $user->update([
+            'role' => $request->validated('role'),
+        ]);
+
+        return back()->with('success', 'Team member role updated successfully.');
     }
 }

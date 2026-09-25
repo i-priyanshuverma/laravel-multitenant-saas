@@ -18,4 +18,29 @@ enum UserRole: string
     {
         return array_column(self::cases(), 'value');
     }
+
+    public function isOwner(): bool
+    {
+        return $this === self::Owner;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this === self::Admin;
+    }
+
+    public function isElevated(): bool
+    {
+        return in_array($this, [self::Owner, self::Admin], true);
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Owner => 'Workspace Owner',
+            self::Admin => 'Administrator',
+            self::Member => 'Team Member',
+            self::Viewer => 'Viewer',
+        };
+    }
 }

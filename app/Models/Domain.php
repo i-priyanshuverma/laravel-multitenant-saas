@@ -19,10 +19,18 @@ class Domain extends Model
         'is_fallback',
     ];
 
-    protected $casts = [
-        'is_primary' => 'boolean',
-        'is_fallback' => 'boolean',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_primary' => 'boolean',
+            'is_fallback' => 'boolean',
+        ];
+    }
 
     public function tenant(): BelongsTo
     {

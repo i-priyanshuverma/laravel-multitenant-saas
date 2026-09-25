@@ -59,7 +59,11 @@ Route::middleware('auth')->group(function () {
         })->name('dashboard');
 
         Route::post('/team/invitations', [TeamInvitationController::class, 'store'])->middleware('plan.limits:users')->name('team.invitations.store');
+        Route::delete('/team/invitations/{invitation}', [TeamInvitationController::class, 'destroy'])->name('team.invitations.destroy');
+        Route::post('/team/invitations/{invitation}/resend', [TeamInvitationController::class, 'resend'])->name('team.invitations.resend');
+
         Route::get('/settings/team', [TeamController::class, 'index'])->name('team.index');
+        Route::patch('/settings/team/{user}', [TeamController::class, 'updateRole'])->name('team.update');
         Route::delete('/settings/team/{user}', [TeamController::class, 'destroy'])->name('team.destroy');
 
         Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');

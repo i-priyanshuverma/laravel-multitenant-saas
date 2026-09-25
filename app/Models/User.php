@@ -31,6 +31,11 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
+    protected $attributes = [
+        'is_super_admin' => false,
+        'avatar_url' => null,
+    ];
+
     protected function casts(): array
     {
         return [
@@ -49,6 +54,21 @@ class User extends Authenticatable implements FilamentUser
     public function isSuperAdmin(): bool
     {
         return (bool) $this->is_super_admin;
+    }
+
+    public function isOwner(): bool
+    {
+        return $this->role === UserRole::Owner || $this->role === 'owner';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin || $this->role === 'admin';
+    }
+
+    public function isElevated(): bool
+    {
+        return $this->isOwner() || $this->isAdmin();
     }
 
     /**
