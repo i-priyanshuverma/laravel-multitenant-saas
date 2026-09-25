@@ -16,16 +16,16 @@ An enterprise-grade, high-throughput Multi-tenant SaaS platform built with **Lar
 
 - **Dynamic Tenant Resolution**: Subdomain (`tenant.saas.com`) and custom domain identification with automatic `X-Tenant` header fallback middleware and strict `tenant.ensure` route boundary guards.
 - **Global Data Isolation**: Eloquent `TenantScoped` trait ensuring zero cross-tenant data leaks at the query builder level.
-- **Team Invitations & Onboarding Flow**: Queueable HTML/Blade invitation emails (`TeamInvitationMail`), token-based invitations, workspace duplicate member protection, and transactional acceptance with automatic session login.
+- **Team Lifecycle & Role Management**: Queueable HTML/Blade invitation emails (`TeamInvitationMail`), token-based invitations, workspace duplicate member protection, invitation lifecycle controls (revocation and resending), and dynamic member role updates (`PATCH /settings/team/{user}`) with workspace owner protections.
 - **Authentication & Security Hardening**: Anti-enumeration password reset flow with tenant workspace context, login rate limiting with lockout protection (`LoginRequest`), and cryptographic webhook signature verification (`Stripe\Webhook::constructEvent`).
 - **Domain Actions & Separation of Concerns**: Single-responsibility domain actions (`OnboardTenantAction`) with Data Transfer Objects (`OnboardTenantData`), centralized `$tenant->url($path)` workspace URL generation, and granular Form Requests across all endpoints.
-- **Modern PHP 8.2 & Laravel 11 Standards**: Type-safe Backed Enums (`UserRole`, `TenantStatus`, `SubscriptionStatus`), method-based Eloquent `casts(): array`, and strict `UserPolicy` workspace authorizations.
+- **Modern PHP 8.2 & Laravel 11 Standards**: Type-safe Backed Enums (`UserRole`, `TenantStatus`, `SubscriptionStatus`), method-based Eloquent `casts(): array`, strict Eloquent model checks (`preventLazyLoading`, `preventSilentlyDiscardingAttributes`), and granular authorization via `UserPolicy` and `TeamInvitationPolicy`.
 - **Vue 3 & Inertia.js Workspace**: Modern dark-mode dashboard, user onboarding, team roster management, and profile settings (Inertia v1.2 stack).
 - **Stripe Subscription Billing Engine**: Integrated Stripe SDK supporting Free, Pro, and Enterprise tiers (monthly & annual billing cycles) with webhook handlers for invoice renewals, grace periods, and card setups.
 - **Plan Usage Limits & Quota Enforcement**: Tier-based seat and storage limits enforcement (`PlanLimitService`) with route middleware (`EnforcePlanLimits`) to protect resource creation (team invitations, member seats) with automated upgrade prompts, 80% & 100% threshold notifications (`PlanLimitThresholdNotification`), and scheduled limit scanner (`tenants:check-plan-limits`).
 - **Account Termination & Soft Deletes**: Soft delete lifecycle support for tenant account offboarding and workspace restoration.
 - **FilamentPHP v3 Super-Admin Panel**: Dedicated `/admin` dashboard featuring MRR metrics, active tenant stats, recent tenant onboarding tables, churn reporting widgets, and tenant impersonation mode.
-- **Role-Based Access Control (RBAC)**: Powered by Spatie Permissions, `UserPolicy` authorization rules, and team invitation tokens.
+- **Role-Based Access Control (RBAC)**: Powered by Spatie Permissions, `UserPolicy` and `TeamInvitationPolicy` authorization rules, and team invitation tokens.
 - **Production DevOps Setup**: Optimized Docker Compose stack (PHP 8.2-FPM, Nginx, PostgreSQL 16, Redis), Kubernetes deployment manifests, database query indexing, and GitHub Actions CI.
 
 ---
